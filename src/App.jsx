@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
+
 import ImgCripto from "./img/imagen-criptos.png";
+import Form from "./components/Form";
 
 const Container = styled.div`
   max-width: 900px;
@@ -45,6 +47,7 @@ function App() {
         <Imagen src={ImgCripto} alt="Imagen cripto" />
         <div>
           <Heading>Cotiza CriptoMonedas al Instante</Heading>
+          <Form />
         </div>
       </Container>
     </>
