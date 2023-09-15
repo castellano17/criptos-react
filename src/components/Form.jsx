@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import useSelectMoney from "../hooks/useSelectMoney";
 import { monedas } from "../utils/Money";
+import Error from "./Error";
 
 const InputSubmit = styled.input`
   background-color: #9497ff;
@@ -22,21 +23,27 @@ const InputSubmit = styled.input`
   }
 `;
 
-const Form = () => {
+const Form = ({ setMoneys }) => {
   const [criptos, setCriptos] = useState([]);
-  const [moneda, SelectMoney] = useSelectMoney("Elige tu moneda", monedas);
+  const [error, setError] = useState(false);
+
+  const [money, SelectMoney] = useSelectMoney("Elige tu moneda", monedas);
+  const [criptomoney, SelectCriptomoney] = useSelectMoney(
+    "Elige tu Criptomoneda",
+    criptos
+  );
 
   useEffect(() => {
     const consultAPI = async () => {
       const URL =
-        "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD";
+        "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD";
       const response = await fetch(URL);
-
       const result = await response.json();
+
       const arrayCriptos = result.Data.map((cripto) => {
         const objet = {
           id: cripto.CoinInfo.Name,
-          name: cripto.CoinInfo.FullName,
+          nombre: cripto.CoinInfo.FullName,
         };
 
         return objet;
@@ -47,12 +54,29 @@ const Form = () => {
     consultAPI();
   }, []);
 
-  return (
-    <form>
-      <SelectMoney />
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if ([money, criptomoney].includes("")) {
+      setError(true);
+      return;
+    }
+    setError(false);
+    setMoneys({
+      money,
+      criptomoney,
+    });
+  };
 
-      <InputSubmit type="submit" value="Cotizar" />
-    </form>
+  return (
+    <>
+      {error && <Error>Todos los campos son obligatorios</Error>}
+      <form onSubmit={handleSubmit}>
+        <SelectMoney />
+        <SelectCriptomoney />
+
+        <InputSubmit type="submit" value="Cotizar" />
+      </form>
+    </>
   );
 };
 
